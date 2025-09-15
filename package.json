@@ -1,0 +1,11 @@
+{
+  "name": "backend_pr",
+  "version": "1.0.0",
+  "description": "kuchh nhi",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
