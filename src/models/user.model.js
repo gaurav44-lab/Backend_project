@@ -1,10 +1,10 @@
-import mongoose , {schema} from "mongoose"
+import mongoose , {Schema} from "mongoose"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
 const user_detail = new mongoose.Schema({
 username : {
-    type : true ,
+    type : String ,
     required : true ,
     unique :  true ,
     lowercase : true ,
@@ -34,19 +34,17 @@ avatar : {
     
 } ,
 
-coverimage : {
+coverImage : {
     type : String ,
+    required: true
     
 },
 
-coverimage : {
-    type : String ,
-    
-},
+
 
 watchHistory : [{
     type : Schema.Types.ObjectId ,
-     ref : " video"
+     ref : "video"
     
 }] ,
 
@@ -70,7 +68,7 @@ refreshtoken : {
 user_detail.pre("save" , async function (next){
      if(!this.isModified("password")) return next()
 
-    this.password = bcrypt.hash(this.password , 10)
+    this.password = await bcrypt.hash(this.password , 10)
     next()
 })
 //  checks the password if it meets the criteria
@@ -94,4 +92,6 @@ user_detail.methods.generateAccessToken = function(){
     )
 }
 
-export const user = mongoose.model("user" , user_detail)
+const user = mongoose.model("user" , user_detail)
+
+export {user}

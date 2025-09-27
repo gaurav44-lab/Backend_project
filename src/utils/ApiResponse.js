@@ -1,4 +1,4 @@
-class Apiresponse extends error {
+class Apiresponse extends Error {
     contructor(statuscode , data , messsage = "success"){
         this.statuscode = statuscode
         this.data = data 
@@ -7,3 +7,5 @@ class Apiresponse extends error {
 
         
 }
+
+export {Apiresponse}
