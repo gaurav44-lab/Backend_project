@@ -6,6 +6,12 @@ import {uploadoncloudinary } from "../utils/cloudinary.js" ;
 import {Apiresponse} from "../utils/ApiResponse.js"
 
 const registerUser = asyncHandler(async (req , res) =>{
+    
+
+    console.log("👉 DEBUG: req.body =", req.body);
+console.log("👉 DEBUG: req.files =", req.files);
+
+
     // steps for user creation 
     // 1. get user details from frontend 
     // 2. validation-not empty
@@ -21,12 +27,10 @@ const registerUser = asyncHandler(async (req , res) =>{
 const {fullname , email , username , password} = req.body
 console.log("email : " , email);
 
-if ([ fullname , email , password , username].some((field)=>field?.trim()==="")
-
-)
-{
+if ([ fullname , email , password , username].some((field)=>!field || field.trim() === "")) {
     throw new ApiError(400, "All fields are required")
 }
+
 
 
  const existeduser = await user.findOne({
@@ -36,6 +40,7 @@ if ([ fullname , email , password , username].some((field)=>field?.trim()==="")
 if (existeduser) {
     throw new ApiError(409 ," user with email or username already exists")
 }
+
 
 const avatarlocalpath = req.files?.avatar[0]?.path;
 const coverimagelocalpath = req.files?.coverImage[0]?.path ;
@@ -65,7 +70,8 @@ if (!avatar){
     coverImage : coverImage?.url || "",
     email , 
     password ,
-    username : username.toLowerCase()
+   username : username ? username.toLowerCase() : ""
+
 })
 
 const createdUser = await user.findById(User._id).select(

@@ -19,36 +19,46 @@
 
 //   export default router
 
+// modification 1:
+
 import { Router } from "express";
 import { registerUser } from "../controllers/user.controllers.js";
-import { upload } from "../middleware/multer.middleware.js";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
 
 const router = Router();
 
-router.route("/register").post(
-  // Debug log before multer
-  (req, res, next) => {
-    console.log("👉 Incoming request to /register");
-    console.log("👉 Content-Type:", req.headers["content-type"]);
-    next();
-  },
+// Multer setup
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadPath = "./public/temp";
+        // Create folder if not exists
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true });
+        }
+        cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
 
-  // Multer middleware
-  upload.fields([
-    { name: "avatar", maxCount: 1 },
-    { name: "coverImage", maxCount: 1 },
-  ]),
+const upload = multer({ storage });
 
-  // Debug log after multer, before controller
-  (req, res, next) => {
-    console.log("✅ Multer executed");
-    console.log("Files received:", req.files);
-    console.log("Body fields:", req.body);
-    next();
-  },
-
-  // Your actual controller
-  registerUser
+// Register route
+router.post("/register",
+    upload.fields([
+        { name: "avatar", maxCount: 1 },
+        { name: "coverImage", maxCount: 1 }
+    ]),
+    (req, res, next) => {
+        console.log("👉 Incoming request to /register");
+        console.log("Files received:", req.files);
+        console.log("Body fields:", req.body);
+        next(); // pass to controller
+    },
+    registerUser
 );
 
 export default router;
